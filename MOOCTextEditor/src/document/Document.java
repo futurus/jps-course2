@@ -51,6 +51,8 @@ public abstract class Document {
 	// next week when we implement the EfficientDocument class.
 	protected int countSyllables(String word)
 	{
+		/* This is commented out because it's slow
+		 * 
 		ArrayList<String> syllables = new ArrayList<String>();
 		
 		Pattern tokSplitter = Pattern.compile("[aeiouyAEIOUY]+");
@@ -67,6 +69,28 @@ public abstract class Document {
 		}
 
 	    return syllables.size();
+	    */
+	    
+	    int numSyllables = 0;
+		boolean newSyllable = true;
+		String vowels = "aeiouy";
+		char[] cArray = word.toCharArray();
+		for (int i = 0; i < cArray.length; i++)
+		{
+		    if (i == cArray.length-1 && Character.toLowerCase(cArray[i]) == 'e' 
+		    		&& newSyllable && numSyllables > 0) {
+                numSyllables--;
+            }
+		    if (newSyllable && vowels.indexOf(Character.toLowerCase(cArray[i])) >= 0) {
+				newSyllable = false;
+				numSyllables++;
+			}
+			else if (vowels.indexOf(Character.toLowerCase(cArray[i])) < 0) {
+				newSyllable = true;
+			}
+		}
+		
+		return numSyllables;
 	}
 	
 	/** A method for testing

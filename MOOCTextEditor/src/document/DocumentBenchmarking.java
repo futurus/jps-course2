@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 /** A class for timing the EfficientDocument and BasicDocument classes
  * 
  * @author UC San Diego Intermediate Programming MOOC team
- *
+ * @author Vu Nguyen
+ * Date: Mar 08, 2016
+ * 
  */
 
 public class DocumentBenchmarking {
@@ -17,7 +19,7 @@ public class DocumentBenchmarking {
 
 	    // Run each test more than once to get bigger numbers and less noise.
 	    // You can try playing around with this number.
-	    int trials = 100;
+	    int trials = 250;
 
 	    // The text to test on
 	    String textfile = "data/warAndPeace.txt";
@@ -42,6 +44,25 @@ public class DocumentBenchmarking {
 		{
 			// numToCheck holds the number of characters that you should read from the 
 			// file to create both a BasicDocument and an EfficientDocument.  
+			
+			System.out.print(numToCheck + "\t");
+			String pText = getStringFromFile(textfile, numToCheck);
+			
+			long startTime = System.nanoTime();
+			for (int i = 0; i < trials; i++) {
+				BasicDocument bd = new BasicDocument(pText);
+				bd.getFleschScore();
+			}
+			long endTime = System.nanoTime();
+			System.out.print((endTime-startTime)/1000000 + "\t");
+			
+			startTime = System.nanoTime();
+			for (int i = 0; i < trials; i++) {
+				EfficientDocument ed = new EfficientDocument(pText);
+				ed.getFleschScore();
+			}
+			endTime = System.nanoTime();
+			System.out.print((endTime-startTime)/1000000 + "\n");
 			
 			/* Each time through this loop you should:
 			 * 1. Print out numToCheck followed by a tab (\t) (NOT a newline)
