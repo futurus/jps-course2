@@ -31,6 +31,9 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public boolean add(E element ) 
 	{
+		if (element == null) {
+			throw new NullPointerException("Cannot add null element!");
+		}
 		LLNode<E> temp = new LLNode<E>(element);
 		temp.prev = tail.prev;
 		temp.next = tail;
@@ -63,7 +66,10 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public void add(int index, E element ) 
 	{
-		if (index < 0 || index > this.size - 1) {
+		if (element == null) {
+			throw new NullPointerException("Cannot add null element!");
+		}
+		if (index < 0 || index > this.size) { // this check allows to add at MyLinkedList.size i.e. at the end of the list
 			throw new IndexOutOfBoundsException("Out of bound!");
 		}
 		// Consider size/2 and go from head or tail
@@ -124,6 +130,9 @@ public class MyLinkedList<E> extends AbstractList<E> {
 	 */
 	public E set(int index, E element) 
 	{
+		if (element == null) {
+			throw new NullPointerException("Cannot add null element!");
+		}
 		if (index < 0 || index > this.size - 1) {
 			throw new IndexOutOfBoundsException("Out of bound!");
 		} else {
@@ -137,7 +146,21 @@ public class MyLinkedList<E> extends AbstractList<E> {
 			
 			return toReturn;
 		}
-	}   
+	}
+	
+	public String toString() {
+		if (this.size() == 0) {
+			return "This LinkedList is empty.";
+		}
+		
+		String printOut = new String();
+
+		for (int i = 0; i < this.size()-1; i++) {
+			printOut += this.get(i) + " <-> ";
+		}
+		
+		return printOut + this.get(this.size()-1);
+	}
 }
 
 class LLNode<E> 
