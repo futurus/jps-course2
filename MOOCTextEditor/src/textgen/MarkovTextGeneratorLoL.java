@@ -7,7 +7,9 @@ import java.util.Random;
 
 /** 
  * An implementation of the MTG interface that uses a list of lists.
- * @author UC San Diego Intermediate Programming MOOC team 
+ * @author UC San Diego Intermediate Programming MOOC team
+ * @author Vu Nguyen
+ * Date: Mar 12, 2016 
  */
 public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 
@@ -32,7 +34,67 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	@Override
 	public void train(String sourceText)
 	{
-		// TODO: Implement this method
+		String[] tokens = sourceText.split(" ");
+		// set starter to be first word, prevW to be starter
+		if (starter.equals("")) {
+			starter = tokens[0];
+		}
+		String prevW = starter;
+		
+		// for word from 2nd place onwards
+		for (int i = 1; i < tokens.length; i++) {
+			if (this.inList(prevW)) { // if prevW already a node
+				this.addWord(prevW, tokens[i]); // add next token to prevW's next word list
+			} else { // otherwise create new node and add next w
+				wordList.add(new ListNode(prevW, tokens[i]));
+			}
+			
+			prevW = tokens[i];
+		}
+		
+		// add starter to be next word for the last word in source text
+		if (this.inList(prevW)) { // if prevW already a node
+			this.addWord(prevW, starter); // add next token to prevW's next word list
+		} else { // otherwise create new node and add next w
+			wordList.add(new ListNode(prevW, starter));
+		}
+		
+		return;
+	}
+	
+	/** Helper method: check to see if word is in list */
+	private boolean inList(String w) {
+		for (ListNode node : wordList) {
+			if (node.getWord().equals(w)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/** Helper method: add nextw to w's next word list */
+	private void addWord(String w, String nextw) {
+		for (ListNode node : wordList) {
+			if (node.getWord().equals(w)) {
+				node.addNextWord(nextw);
+				
+				return;
+			}
+		}
+		
+		return;
+	}
+	
+	/** Helper method: randomly get the next word */
+	private String getNextWord(String w) {
+		for (ListNode node : wordList) {
+			if (node.getWord().equals(w)) {
+				return node.getRandomNextWord(rnGenerator);
+			}
+		}
+		
+		return "";
 	}
 	
 	/** 
@@ -40,8 +102,15 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	 */
 	@Override
 	public String generateText(int numWords) {
-	    // TODO: Implement this method
-		return null;
+	    String text = "";
+	    String nextWord = starter;
+	    
+	    for (int i = 0; i < numWords; i++) {
+	    	text += nextWord + " ";
+	    	nextWord = getNextWord(nextWord);
+	    }
+		
+		return text;
 	}
 	
 	
@@ -61,10 +130,12 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	@Override
 	public void retrain(String sourceText)
 	{
-		// TODO: Implement this method.
+		wordList = new LinkedList<ListNode>();
+		starter = "";
+		this.train(sourceText);
+		
+		return;
 	}
-	
-	// TODO: Add any private helper methods you need here.
 	
 	
 	/**
@@ -129,6 +200,11 @@ class ListNode
 		nextWords = new LinkedList<String>();
 	}
 	
+	ListNode(String word, String nextw) {
+		this(word);
+		this.addNextWord(nextw);
+	}
+	
 	public String getWord()
 	{
 		return word;
@@ -141,10 +217,7 @@ class ListNode
 	
 	public String getRandomNextWord(Random generator)
 	{
-		// TODO: Implement this method
-	    // The random number generator should be passed from 
-	    // the MarkovTextGeneratorLoL class
-	    return null;
+	    return nextWords.get(generator.nextInt(nextWords.size()));
 	}
 
 	public String toString()
