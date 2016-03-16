@@ -1,12 +1,14 @@
 package spelling;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Set;
 
 /** 
  * Represents a node in a Trie
  * @author UC San Diego Intermediate Programming MOOC Team
- *
+ * @author Vu Nguyen
+ * Date: Mar 16, 2016
  */
 class TrieNode {
 	private HashMap<Character, TrieNode> children; 
@@ -37,6 +39,18 @@ class TrieNode {
 	public TrieNode getChild(Character c)
 	{
 		return children.get(c);
+	}
+	
+	/** Return all children
+	 * @param none
+	 * @return a linked list of TrieNode
+	 */
+	public LinkedList<TrieNode> getChildren() {
+		LinkedList<TrieNode> out = new LinkedList<TrieNode>();
+		for (TrieNode n : children.values()) {
+			out.add(n);
+		}
+		return out;
 	}
 	
 	/** Inserts this character at this node.

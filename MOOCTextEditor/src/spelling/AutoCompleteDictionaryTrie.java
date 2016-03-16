@@ -2,14 +2,16 @@ package spelling;
 
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 /** 
  * An trie data structure that implements the Dictionary and the AutoComplete ADT
- * @author You
- *
+ * @author UC San Diego Intermediate Programming MOOC Team
+ * @author Vu Nguyen
+ * Date: Mar 16, 2016
  */
 public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 
@@ -20,6 +22,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     public AutoCompleteDictionaryTrie()
 	{
 		root = new TrieNode();
+		size = 0;
 	}
 	
 	
@@ -28,7 +31,21 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 * That is, you should convert the string to all lower case as you insert it. */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
+		TrieNode curr = root;
+		char[] chars = word.toLowerCase().toCharArray();
+
+		for (int i = 0; i < chars.length; i++) {
+			if (curr.getChild(chars[i]) == null) {
+				curr.insert(chars[i]);
+			}
+			curr = curr.getChild(chars[i]);
+		}
+		if (!curr.endsWord()) {
+			curr.setEndsWord(true);
+			size++;
+			return true;
+		}
+
 	    return false;
 	}
 	
@@ -38,8 +55,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public int size()
 	{
-	    //TODO: Implement this method
-	    return 0;
+	    return size;
 	}
 	
 	
@@ -47,7 +63,20 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	@Override
 	public boolean isWord(String s) 
 	{
-	    // TODO: Implement this method
+		TrieNode curr = root;
+		char[] chars = s.toLowerCase().toCharArray();
+		
+		for (int i = 0; i < chars.length; i++) {
+			if (curr.getChild(chars[i]) != null) {
+				curr = curr.getChild(chars[i]);
+			} else {
+				return false;
+			}
+		}
+		
+		if (curr.endsWord()) {
+			return true;
+		}
 		return false;
 	}
 
@@ -61,7 +90,6 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
      */@Override
      public List<String> predictCompletions(String prefix, int numCompletions) 
      {
-    	 // TODO: Implement this method
     	 // This method should implement the following algorithm:
     	 // 1. Find the stem in the trie.  If the stem does not appear in the trie, return an
     	 //    empty list
@@ -76,7 +104,37 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     	 //       Add all of its child nodes to the back of the queue
     	 // Return the list of completions
     	 
-         return null;
+    	 List<String> returns = new ArrayList<String>();
+    	 if (numCompletions == 0) return returns;
+    	 
+    	 TrieNode curr = root;
+    	 char[] chars = prefix.toLowerCase().toCharArray();
+    	 LinkedList<TrieNode> queue;
+    	 
+    	 for (int i = 0; i < chars.length; i++) {
+    		 if (curr.getChild(chars[i]) != null) {
+    			 curr = curr.getChild(chars[i]);
+    		 } else {
+    			 return returns; // empty list
+    		 }
+    	 }
+
+    	 queue = new LinkedList<TrieNode>();
+    	 queue.add(curr);
+    	 
+    	 // at end of stem, what next?!
+    	 while (queue.size() > 0 && returns.size() < numCompletions) {
+    		TrieNode n = queue.pop();
+    		// append n's children to the end of queue
+    		if (n.getChildren().size() > 0) { queue.addAll(n.getChildren()); }
+    		
+    		// now if n is a word, add it to returns
+    		if (n.endsWord()) {
+    			returns.add(n.getText());
+    		}
+    	 }
+    	  
+    	 return returns;
      }
 
  	// For debugging
@@ -99,7 +157,5 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
  			printNode(next);
  		}
  	}
- 	
-
 	
 }
